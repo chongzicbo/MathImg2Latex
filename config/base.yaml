@@ -1,0 +1,63 @@
+name: nougat-base
+device:
+  allow_tf32: true
+model:
+  type: VisionEncoderDecoderModel
+  pretrained_model_name_or_path: Norm/nougat-latex-base #"Norm/nougat-latex-base" facebook/nougat-base
+  max_length: 800
+  image_size: [224, 560]  # height, width
+  quantization_type: ''
+  model_path: /data/bocheng/data/logs/230k_10k/nougat-base_epoch18_step214000_lr1.833212e-07_avg_loss0.00551_token_acc0.71300_edit_dis0.03889.pth
+  mixed_precision: "fp16" # "["no", "fp16", "bf16]
+  processor_args:
+    img_processor_args:
+      do_crop_margin: false
+trainer:
+  start_global_step: -1
+  resume_flag: false
+  use_ema: false
+  ema_include: []
+  # gradient configuration
+  grad_accumulate: 1 # gradient accumulation
+  random_seed: ~
+  grad_clip: 3.0
+  optimizer:
+    optimizer_type: "adamw"
+    lr: 2.0e-05
+    # layer_decay: 0.75
+    weight_decay: 0.05
+    beta1: 0.9
+    beta2: 0.98
+    eps: 1.0e-6
+  scheduler:
+    scheduler_type: "cosine"
+    warmup_epochs: 0
+    warmup_steps: 500
+  epochs: 20
+  # tensorboard configuration
+  save_dir: /data/bocheng/data/logs/im2latex_170k
+  tensorboard_dir: /data/bocheng/data/logs/im2latex_170k/tensorboard
+  # display configuration
+  save_epoch_freq: 1
+  save_step_freq: 1000
+  print_freq: 20
+datasets:
+  train:
+    dataset:
+      type: NougatDataset
+      data_root:
+        - /data/bocheng/data/MathOCR//im2latex_170k/train
+      equations: /data/bocheng/data/MathOCR/im2latex_170k/math.txt
+    num_workers: 5
+    batch_size: 32
+    shuffle: true
+    collate_fn:
+      type: NougatPadFixSizeCollectFn
+      debug: false
+  eval:
+    dataset:
+      data_root:
+      - /data/bocheng/data/MathOCR/im2latex_170k/val
+      equations: /data/bocheng/data/MathOCR/im2latex_170k/math.txt
+    shuffle: false
+    batch_size: 32
