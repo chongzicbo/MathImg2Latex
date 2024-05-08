@@ -49,5 +49,7 @@ Please refer to examples/predict.py and examples/run_latex_ocr.py.
 
 Thanks to [NormXU/nougat-latex-ocr: Codebase for fine-tuning / evaluating nougat-based image2latex generation models (github.com)](https://github.com/NormXU/nougat-latex-ocr)
 
+## Model
+https://huggingface.co/chongzicbo/MathImg2Latex
 
 
