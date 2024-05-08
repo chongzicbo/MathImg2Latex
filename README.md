@@ -41,7 +41,7 @@ python tools/train_experiment.py --config_file config/base.yaml --phase 'train'
 
 ## 
 
-## Predict
+### Predict
 
 Please refer to examples/predict.py and examples/run_latex_ocr.py.
 
