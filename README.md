@@ -39,8 +39,6 @@ There are over 540,000 filtered image-equation pair.
 python tools/train_experiment.py --config_file config/base.yaml --phase 'train'
 ```
 
-## 
-
 ### Predict
 
 Please refer to examples/predict.py and examples/run_latex_ocr.py.

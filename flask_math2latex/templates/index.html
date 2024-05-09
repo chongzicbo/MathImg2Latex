@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Paste Image</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+</head>
+
+
+<body>
+    <div id="paste-area" contenteditable="true" style="width: 200px; height: 100px; border: 1px solid black;">
+        Press Ctrl+V to paste image here
+    </div>
+    <div id="results" style="margin-top: 20px;">
+        <h2>Uploaded Image:</h2>
+        <img id="uploaded-image" src="" alt="Uploaded image will appear here." style="max-width: 500px;">
+
+        <h2>LaTeX Code:</h2>
+        <textarea id="latex-code" rows="4" style="width: 100%;"></textarea>
+    </div>
+    <script>
+        $('#paste-area').on('paste', function (e) {
+            var items = e.originalEvent.clipboardData.items;
+            for (index in items) {
+                var item = items[index];
+                if (item.kind === 'file') {
+                    var blob = item.getAsFile();
+                    var formData = new FormData();
+                    formData.append('image', blob);
+
+                    // 上传图片到服务器
+                    $.ajax({
+                        url: '/upload',
+                        type: 'POST',
+                        data: formData,
+                        processData: false,
+                        contentType: false,
+                        success: function (response) {
+                            console.log('Image uploaded:', response);
+                            // 创建一个新的图片对象
+                            var img = new Image();
+
+                            img.src = response.image_url;  // 设置图片对象的src属性
+
+                            img.onload = function () {
+                                // 当图片加载完成, 调整显示图片<div>的大小(不需要调整，图片<img>标签会自适应图片大小)
+                                // 显示图片
+                                $('#uploaded-image').attr('src', response.image_url).css({
+                                    'max-width': '100%', // 确保图片不会超过其容器宽度
+                                    'height': 'auto', // 高度自适应
+                                    'display': 'block' // 确保图片以块级元素显示
+                                }).show();
+
+                                // 清空粘贴框的内容，但保持原来的样式和大小
+                                $('#paste-area').html(""); // 使用html("")而不是empty()也可以达到清空内容的目的
+
+                            };
+
+                            // 清空粘贴框的内容
+                            // $('#paste-area').empty();
+
+                            // 设置textarea内容为返回的latex代码
+                            $('#latex-code').val(response.latex_code);
+                        },
+                        error: function (jqXHR, textStatus, errorMessage) {
+                            console.error('Error uploading:', errorMessage);
+                        }
+                    });
+
+                    break; // 只处理第一个文件
+                }
+            }
+        });
+    </script>
+</body>
+
+</html>
