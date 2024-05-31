@@ -46,6 +46,7 @@ async function extractFormula(model) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const latexFormula = await response.text();
+        document.getElementById('formulaSource').innerHTML = "Source Latex Code: " + latexFormula
         document.getElementById('formulaResult').innerHTML = `$$${latexFormula}$$`;
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         sourceFormula = latexFormula; // 在这里设置sourceFormula
