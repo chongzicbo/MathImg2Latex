@@ -11,11 +11,14 @@
 <body>
     <h1>Math Formula Extractor</h1>
     <textarea id="pasteBox" placeholder="Paste image here..."></textarea>
+    <img id="uploadedImage" style="display: none;" />
+
     <button onclick="extractFormula('pix2text')">Extract with pix2text</button>
     <button onclick="extractFormula('nougat')">Extract with nougat</button>
+
     <p id="formulaSource"></p>
     <p id="formulaResult"></p>
-    <img id="uploadedImage" style="display: none;" />
+
     <button id="saveButton" onclick="saveResult()">Save Result</button> <!-- 添加保存按钮 -->
     <script src="{{ url_for('static', filename='js/image2latex.js') }}"></script>
 </body>

@@ -31,7 +31,7 @@
 
   button {
       display: block;
-      width: 100%;
+      width: 30%;
       padding: 10px;
       margin-bottom: 10px;
       border: none;
@@ -39,6 +39,10 @@
       background-color: #007BFF;
       color: white;
       cursor: pointer;
+      margin-left: auto;
+      /* 将左外边距设置为auto */
+      margin-right: auto;
+      /* 将右外边距设置为auto */
   }
 
   button:hover {
@@ -53,9 +57,11 @@
       background-color: #f9f9f9;
       min-height: 50px;
   }
-  #formulaSource{
+
+  #formulaSource {
       margin-top: 20px;
       padding: 10px;
+      width: 100%;
       border: 1px solid #ddd;
       border-radius: 5px;
       background-color: #f9f9f9;

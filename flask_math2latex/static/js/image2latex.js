@@ -1,6 +1,9 @@
 let imageSavePath = "";
 let sourceFormula = "";
 const imageSaveDirectory = '/data/bocheng/data/test/images';
+window.onload = function () {
+    hideElementsIfEmpty()
+};
 function generateRandomFileName() {
     // 生成一个随机的36进制字符串
     const randomString = Math.random().toString(36).substring(2);
@@ -34,6 +37,7 @@ document.getElementById('pasteBox').addEventListener('paste', function (e) {
         }
     }
 });
+
 async function extractFormula(model) {
     // Now extract the formula
     if (!imageSavePath) {
@@ -46,10 +50,13 @@ async function extractFormula(model) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const latexFormula = await response.text();
-        document.getElementById('formulaSource').innerHTML = "Source Latex Code: " + latexFormula
-        document.getElementById('formulaResult').innerHTML = `$$${latexFormula}$$`;
+        document.getElementById('formulaSource').textContent = "Source Latex Code: " + latexFormula;
+        // Set the new formula directly, overwriting the old one
+        document.getElementById('formulaResult').textContent = `$$${latexFormula}$$`;
+        // Typeset the new formula
         MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
         sourceFormula = latexFormula; // 在这里设置sourceFormula
+        hideElementsIfEmpty();
     } catch (error) {
         console.error('Error extracting formula:', error);
     }
@@ -110,4 +117,21 @@ function saveBlobAsFile(blob, filename) {
         });
     };
     reader.readAsArrayBuffer(blob);
+}
+
+function hideElementsIfEmpty() {
+    const formulaSource = document.getElementById('formulaSource');
+    const formulaResult = document.getElementById('formulaResult');
+    const saveButton = document.getElementById('saveButton');
+
+    // 检查内容是否为空
+    if (formulaSource.innerText.trim() === '' && formulaResult.innerText.trim() === '') {
+        formulaSource.style.display = 'none';
+        formulaResult.style.display = 'none';
+        saveButton.style.display = 'none';
+    } else {
+        formulaSource.style.display = 'block';
+        formulaResult.style.display = 'block';
+        saveButton.style.display = 'block';
+    }
 }

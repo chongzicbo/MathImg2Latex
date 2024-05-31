@@ -11,7 +11,7 @@ app.config["MYSQL_HOST"] = "127.0.0.1"
 app.config["MYSQL_USER"] = "root"
 app.config["MYSQL_PASSWORD"] = "123456"
 app.config["MYSQL_DB"] = "test"
-app.config["MYSQL_CHARSET"]="utf8mb4"
+app.config["MYSQL_CHARSET"] = "utf8mb4"
 
 mysql = MySQL(app)
 
@@ -38,12 +38,12 @@ def save_result():
 # 假设的模拟方法，你需要替换为实际的模型调用方法
 def extract_mathematic_formula_pix2text(img_path):
     # 这里应该是调用模型的代码，返回LaTeX公式
-    return "LaTeX formula from pix2text"
+    return r"\int_{-\epsilon}^\infty dl\: {\rm e}^{-l\zeta}	\int_{-\epsilon}^\infty dl' {\rm e}^{-l'\zeta}	ll'{l'-l \over l+l'} \{3\,\delta''(l) - {3 \over 4}t\,\delta(l) \} =0.		\label{eq21}"
 
 
 def extract_mathematic_formula_nougat(img_path):
     # 这里应该是调用模型的代码，返回LaTeX公式
-    return "LaTeX formula from nougat"
+    return r"\frac{1}{d-2}\tilde{\Pi}^{2}-\tilde{\Pi}_{ab}\tilde{\Pi}^{ab}=\frac{\left(d-1\right) \left( d-2\right) }{\ell ^{2}}+R  \label{Gc}"
 
 
 @app.route("/", methods=["GET"])
