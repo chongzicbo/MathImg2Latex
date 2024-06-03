@@ -3,6 +3,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, request, render_template, jsonify
 from flask_mysqldb import MySQL
+from loguru import logger
 
 app = Flask(__name__)
 
@@ -58,9 +59,11 @@ def save_image():
 
     file = request.files["file"]
     filename = secure_filename(file.filename)
-    save_path = os.path.join("/data/bocheng/data/test/images", filename)
+    # 获取目录信息，如果未提供则使用默认目录
+    save_directory = request.form.get("directory")
+    save_path = os.path.join(save_directory, filename)
     file.save(save_path)
-
+    logger.info(f"file had been saved to {save_path}")
     return "Image saved", 200
 
 

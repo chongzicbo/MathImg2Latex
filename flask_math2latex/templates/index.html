@@ -13,13 +13,19 @@
     <textarea id="pasteBox" placeholder="Paste image here..."></textarea>
     <img id="uploadedImage" style="display: none;" />
 
-    <button onclick="extractFormula('pix2text')">Extract with pix2text</button>
-    <button onclick="extractFormula('nougat')">Extract with nougat</button>
-
-    <p id="formulaSource"></p>
+    <div class="buttons-container">
+        <button onclick="extractFormula('pix2text')">Extract with pix2text</button>
+        <button onclick="extractFormula('nougat')">Extract with nougat</button>
+    </div>
+    <div class="form-group">
+        <label for="formulaSource" id="formulaSourceLabel">Extracted Formula: You can directly edit it. If there are no
+            errors in the foumula extraction or after your editing, please click the "Save" button</label>
+        <textarea id="formulaSource" placeholder="Enter LaTeX code here..." rows="4" style="width: 100%;"></textarea>
+    </div>
     <p id="formulaResult"></p>
-
-    <button id="saveButton" onclick="saveResult()">Save Result</button> <!-- 添加保存按钮 -->
+    <div class="buttons-container">
+        <button id="saveButton" onclick="saveResult()">Save</button> <!-- 添加保存按钮 -->
+    </div>
     <script src="{{ url_for('static', filename='js/image2latex.js') }}"></script>
 </body>
 

@@ -1,6 +1,6 @@
 let imageSavePath = "";
 let sourceFormula = "";
-const imageSaveDirectory = '/data/bocheng/data/test/images';
+const save_directory = "/data/bocheng/data/test/images"
 window.onload = function () {
     hideElementsIfEmpty()
 };
@@ -22,10 +22,10 @@ document.getElementById('pasteBox').addEventListener('paste', function (e) {
 
                 // Save the image data to a file
                 const filename = generateRandomFileName();
-                const imagePath = `${imageSaveDirectory}/${filename}`;
+                const imagePath = `${save_directory}/${filename}`;
 
                 const imageBlob = dataURItoBlob(imageData);
-                saveBlobAsFile(imageBlob, imagePath);
+                saveBlobAsFile(imageBlob, filename, save_directory);
                 imageSavePath = imagePath
                 // Display the uploaded image
                 const imageUrl = URL.createObjectURL(imageBlob);
@@ -37,9 +37,22 @@ document.getElementById('pasteBox').addEventListener('paste', function (e) {
         }
     }
 });
+// 这个函数用于更新显示的公式并重新渲染MathJax内容
+function updateFormulaDisplay(latex) {
+    let formulaResultElement = document.getElementById('formulaResult');
 
+    // 设置并显示新的LaTeX公式
+    formulaResultElement.textContent = `$$${latex}$$`;
+    MathJax.Hub.Queue(["Typeset", MathJax.Hub, formulaResultElement]);
+}
+
+// 在用户对LaTeX源码作出更改时更新和渲染公式
+document.getElementById('formulaSource').addEventListener('input', function () {
+    updateFormulaDisplay(this.value);
+});
+
+// extractFormula函数从服务器获取提取的LaTeX公式，并更新显示
 async function extractFormula(model) {
-    // Now extract the formula
     if (!imageSavePath) {
         alert('Please paste an image into the text box.');
         return;
@@ -50,17 +63,19 @@ async function extractFormula(model) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
         const latexFormula = await response.text();
-        document.getElementById('formulaSource').textContent = "Source Latex Code: " + latexFormula;
-        // Set the new formula directly, overwriting the old one
-        document.getElementById('formulaResult').textContent = `$$${latexFormula}$$`;
-        // Typeset the new formula
-        MathJax.Hub.Queue(["Typeset", MathJax.Hub]);
-        sourceFormula = latexFormula; // 在这里设置sourceFormula
+        document.getElementById('formulaSource').value = latexFormula; // 将提取的公式设置为文本域的值
+
+        // 更新显示的公式并重新渲染MathJax内容
+        updateFormulaDisplay(latexFormula);
+
+        sourceFormula = latexFormula; // 保存原始获取的LaTeX公式
         hideElementsIfEmpty();
     } catch (error) {
         console.error('Error extracting formula:', error);
     }
 }
+
+
 function saveResult() {
     const formulaElement = document.getElementById('formulaResult');
     let formula = formulaElement.innerText || formulaElement.textContent;
@@ -103,7 +118,7 @@ function dataURItoBlob(dataURI) {
     return new Blob([ab], { type: mimeString });
 }
 
-function saveBlobAsFile(blob, filename) {
+function saveBlobAsFile(blob, filename, saveDirectory) {
     const reader = new FileReader();
     reader.onloadend = function () {
         const arrayBuffer = reader.result;
@@ -111,6 +126,7 @@ function saveBlobAsFile(blob, filename) {
         const file = new File([uint8Array], filename, { type: blob.type });
         const formData = new FormData();
         formData.append('file', file);
+        formData.append('directory', saveDirectory);
         fetch('/save_image', {
             method: 'POST',
             body: formData
@@ -123,15 +139,18 @@ function hideElementsIfEmpty() {
     const formulaSource = document.getElementById('formulaSource');
     const formulaResult = document.getElementById('formulaResult');
     const saveButton = document.getElementById('saveButton');
+    const formulaSourceLabel = document.getElementById("formulaSourceLabel")
 
     // 检查内容是否为空
     if (formulaSource.innerText.trim() === '' && formulaResult.innerText.trim() === '') {
         formulaSource.style.display = 'none';
         formulaResult.style.display = 'none';
         saveButton.style.display = 'none';
+        formulaSourceLabel.style.display = 'none'
     } else {
         formulaSource.style.display = 'block';
         formulaResult.style.display = 'block';
         saveButton.style.display = 'block';
+        formulaSourceLabel.style.display = "block"
     }
 }
