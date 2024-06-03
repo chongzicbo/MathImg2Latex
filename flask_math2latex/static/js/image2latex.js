@@ -37,6 +37,7 @@ document.getElementById('pasteBox').addEventListener('paste', function (e) {
         }
     }
 });
+document.getElementById('saveButton').addEventListener('click', saveResult);
 // 这个函数用于更新显示的公式并重新渲染MathJax内容
 function updateFormulaDisplay(latex) {
     let formulaResultElement = document.getElementById('formulaResult');
@@ -77,34 +78,33 @@ async function extractFormula(model) {
 
 
 function saveResult() {
-    const formulaElement = document.getElementById('formulaResult');
-    let formula = formulaElement.innerText || formulaElement.textContent;
+    // 取得用户在textarea中编辑的公式
+    const formula = document.getElementById('formulaSource').value;
+    const image_path = imageSavePath; // 假设这是之前存储图像路径的变量
 
-    // 去除LaTeX公式字符串的HTML标签
-    formula = formula.replace(/<[^>]*>/g, '').trim();
-
-    if (!formula.trim()) {
-        alert("Please paste an image and extract the formula first.");
-        return;
+    // 弹出确认框
+    if (confirm("Are you sure the extracted formula is correct?")) {
+        // 用户点击是（Yes），发送AJAX请求到后端保存结果
+        fetch('/save_result', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                formula: formula,
+                image_path: image_path,
+            }),
+        })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // 显示保存成功消息
+            })
+            .catch((error) => {
+                console.error('Error:', error); // 处理错误情况
+            });
+    } else {
+        // 用户点击否（No），不做任何事情
     }
-
-    fetch('/save_result', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-            formula: sourceFormula,
-            image_path: imageSavePath
-        })
-    })
-        .then(response => response.json())
-        .then(data => {
-            alert(data.message);
-        })
-        .catch(error => {
-            console.error('Error saving result:', error);
-        });
 }
 
 function dataURItoBlob(dataURI) {
