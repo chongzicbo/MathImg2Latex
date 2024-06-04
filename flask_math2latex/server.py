@@ -3,24 +3,21 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, request, render_template, jsonify
 from flask_mysqldb import MySQL
-from loguru import logger
+from config.config import logger
+from config.config import MysqlConfig
+from model_server.nougat_server import predict_one as nougat_predict_one
+from model_server.pix2text_server import predict_one as pix2text_predict_one
 
 app = Flask(__name__)
 
 # 配置MySQL数据库连接
-app.config["MYSQL_HOST"] = "127.0.0.1"
-app.config["MYSQL_USER"] = "root"
-app.config["MYSQL_PASSWORD"] = "123456"
-app.config["MYSQL_DB"] = "test"
-app.config["MYSQL_CHARSET"] = "utf8mb4"
-
+app.config.from_object(MysqlConfig)
 mysql = MySQL(app)
 
 
 @app.route("/save_result", methods=["POST"])
 def save_result():
     data = request.get_json()
-    print(data)
     formula = data.get("formula")
     image_path = data.get("image_path")
 
@@ -32,19 +29,21 @@ def save_result():
     )
     mysql.connection.commit()
     cur.close()
-
+    logger.info(f"image: {image_path},formula: {formula} saved to database")
     return jsonify({"message": "Result saved successfully!"}), 200
 
 
 # 假设的模拟方法，你需要替换为实际的模型调用方法
 def extract_mathematic_formula_pix2text(img_path):
     # 这里应该是调用模型的代码，返回LaTeX公式
-    return r"\int_{-\epsilon}^\infty dl\: {\rm e}^{-l\zeta}	\int_{-\epsilon}^\infty dl' {\rm e}^{-l'\zeta}	ll'{l'-l \over l+l'} \{3\,\delta''(l) - {3 \over 4}t\,\delta(l) \} =0.		\label{eq21}"
+    sequence = pix2text_predict_one(img_path)
+    return sequence
 
 
 def extract_mathematic_formula_nougat(img_path):
     # 这里应该是调用模型的代码，返回LaTeX公式
-    return r"\frac{1}{d-2}\tilde{\Pi}^{2}-\tilde{\Pi}_{ab}\tilde{\Pi}^{ab}=\frac{\left(d-1\right) \left( d-2\right) }{\ell ^{2}}+R  \label{Gc}"
+    sequence = nougat_predict_one(img_path)
+    return sequence
 
 
 @app.route("/", methods=["GET"])
