@@ -1,9 +1,8 @@
-import argparse
 import os, sys
 
 sys.path.append(os.path.dirname("."))
-os.environ["XDG_CACHE_HOME"] = "/data/bocheng/data/.cache"
-os.environ["HUGGINGFACE_HUB_CACHE"] = "/data/bocheng/data/.cache/huggingface/hub/"
+os.environ["XDG_CACHE_HOME"] = "/data/bocheng/.cache"
+os.environ["HUGGINGFACE_HUB_CACHE"] = "/data/bocheng/.cache/huggingface/hub/"
 import torch
 from PIL import Image
 from transformers import VisionEncoderDecoderModel
@@ -46,7 +45,7 @@ def load_tokenizer_processor():
     return tokenizer, latex_processor
 
 
-checkpoint_path = "/data/bocheng/data/logs/im2latex_170k/nougat-base_epoch17_step108000_lr8.861961e-07_avg_loss0.00397_token_acc0.84964_edit_dis0.02927.pth"
+checkpoint_path = "/data/bocheng/pretrained_model/mathocr/nougat-base_epoch17_step108000_lr8.861961e-07_avg_loss0.00397_token_acc0.84964_edit_dis0.02927.pth"
 model = load_model(checkpoint_path)
 tokenizer, latex_processor = load_tokenizer_processor()
 
@@ -86,10 +85,10 @@ def predict_one(
     return sequence
 
 
-if __name__ == "__main__":
-    checkpoint_path = "/data/bocheng/data/logs/im2latex_170k/nougat-base_epoch17_step108000_lr8.861961e-07_avg_loss0.00397_token_acc0.84964_edit_dis0.02927.pth"
-    img_path = "/data/bocheng/data/MathOCR/test/agriculture-2549214-01.png"
-    model = load_model(checkpoint_path)
-    tokenizer, latex_processor = load_tokenizer_processor()
-    sequence = predict_one(img_path, tokenizer, latex_processor, model)
-    print(sequence)
+# if __name__ == "__main__":
+#     checkpoint_path = "/data/bocheng/data/logs/im2latex_170k/nougat-base_epoch17_step108000_lr8.861961e-07_avg_loss0.00397_token_acc0.84964_edit_dis0.02927.pth"
+#     img_path = "/data/bocheng/data/MathOCR/test/agriculture-2549214-01.png"
+#     model = load_model(checkpoint_path)
+#     tokenizer, latex_processor = load_tokenizer_processor()
+#     sequence = predict_one(img_path, tokenizer, latex_processor, model)
+#     print(sequence)

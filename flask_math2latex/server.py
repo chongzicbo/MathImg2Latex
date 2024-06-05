@@ -1,18 +1,16 @@
-from flask import Flask, request, render_template, send_from_directory, url_for
+from flask import Flask, request, render_template
 import os
 from werkzeug.utils import secure_filename
 from flask import Flask, request, render_template, jsonify
-from flask_mysqldb import MySQL
 from config.config import logger
-from config.config import MysqlConfig
+from config.config import images_formulas_saved_dir, Database
 from model_server.nougat_server import predict_one as nougat_predict_one
 from model_server.pix2text_server import predict_one as pix2text_predict_one
+from datetime import datetime
 
 app = Flask(__name__)
 
-# 配置MySQL数据库连接
-app.config.from_object(MysqlConfig)
-mysql = MySQL(app)
+db = Database()
 
 
 @app.route("/save_result", methods=["POST"])
@@ -20,28 +18,31 @@ def save_result():
     data = request.get_json()
     formula = data.get("formula")
     image_path = data.get("image_path")
+    create_time = datetime.now()
 
     # 连接数据库并执行SQL查询
-    cur = mysql.connection.cursor()
-    cur.execute(
-        "INSERT INTO math_image_foumula(formula, image_path) VALUES (%s, %s)",
-        (formula, image_path),
+    db.execute(
+        "INSERT INTO math_image_foumula(formula, image_path,create_time) VALUES (%s, %s,%s)",
+        (formula, image_path, create_time),
     )
-    mysql.connection.commit()
-    cur.close()
     logger.info(f"image: {image_path},formula: {formula} saved to database")
+    formula_saved_filename = os.path.splitext(os.path.basename(image_path))[0]
+    formula_saved_path = os.path.join(
+        images_formulas_saved_dir, formula_saved_filename + ".txt"
+    )
+
+    with open(formula_saved_path, "w") as fw:
+        fw.write(formula)
+        logger.info(f"formula had been written into {formula_saved_path}")
     return jsonify({"message": "Result saved successfully!"}), 200
 
 
-# 假设的模拟方法，你需要替换为实际的模型调用方法
 def extract_mathematic_formula_pix2text(img_path):
-    # 这里应该是调用模型的代码，返回LaTeX公式
     sequence = pix2text_predict_one(img_path)
     return sequence
 
 
 def extract_mathematic_formula_nougat(img_path):
-    # 这里应该是调用模型的代码，返回LaTeX公式
     sequence = nougat_predict_one(img_path)
     return sequence
 
@@ -83,4 +84,4 @@ def extract_formula():
 
 if __name__ == "__main__":
     # app.run(debug=True)
-    app.run(host="0.0.0.0", port=8504, debug=True)
+    app.run(host="0.0.0.0", port=17800, debug=True)

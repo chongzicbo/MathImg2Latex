@@ -1,6 +1,7 @@
 let imageSavePath = "";
 let sourceFormula = "";
 const save_directory = "/data/bocheng/data/test/images"
+
 window.onload = function () {
     hideElementsIfEmpty()
 };
