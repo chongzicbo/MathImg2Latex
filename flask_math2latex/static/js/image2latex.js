@@ -1,7 +1,7 @@
 let imageSavePath = "";
 let sourceFormula = "";
 const save_directory = "/data/bocheng/data/test/images"
-
+const isTest = false
 window.onload = function () {
     hideElementsIfEmpty()
 };
@@ -55,12 +55,19 @@ document.getElementById('formulaSource').addEventListener('input', function () {
 
 // extractFormula函数从服务器获取提取的LaTeX公式，并更新显示
 async function extractFormula(model) {
+    let request_url = "";
     if (!imageSavePath) {
         alert('Please paste an image into the text box.');
         return;
     }
     try {
-        const response = await fetch(`/extract?model=${model}&image_path=${encodeURIComponent(imageSavePath)}`);
+        if (isTest) {
+            request_url = `/extract?model=${model}&image_path=${encodeURIComponent(imageSavePath)}`
+        }
+        else {
+            request_url = `/mathocr/extract?model=${model}&image_path=${encodeURIComponent(imageSavePath)}`
+        }
+        const response = await fetch(request_url);
         if (!response.ok) {
             throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -82,11 +89,17 @@ function saveResult() {
     // 取得用户在textarea中编辑的公式
     const formula = document.getElementById('formulaSource').value;
     const image_path = imageSavePath; // 假设这是之前存储图像路径的变量
-
+    let request_url = "";
+    if (isTest) {
+        request_url = '/save_result';
+    }
+    else {
+        request_url = '/mathocr/save_result';
+    }
     // 弹出确认框
     if (confirm("Are you sure the extracted formula is correct?")) {
         // 用户点击是（Yes），发送AJAX请求到后端保存结果
-        fetch('/save_result', {
+        fetch(request_url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -120,6 +133,13 @@ function dataURItoBlob(dataURI) {
 }
 
 function saveBlobAsFile(blob, filename, saveDirectory) {
+    let request_url = "";
+    if (isTest) {
+        request_url = '/save_image';
+    }
+    else {
+        request_url = '/mathocr/save_image';
+    }
     const reader = new FileReader();
     reader.onloadend = function () {
         const arrayBuffer = reader.result;
@@ -128,7 +148,7 @@ function saveBlobAsFile(blob, filename, saveDirectory) {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('directory', saveDirectory);
-        fetch('/save_image', {
+        fetch(request_url, {
             method: 'POST',
             body: formData
         });
