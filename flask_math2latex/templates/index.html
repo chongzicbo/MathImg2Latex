@@ -6,9 +6,12 @@
     <title>Math Formula Extractor</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='images/logo.png') }}"> <!-- 添加这行 -->
+
 </head>
 
 <body>
+
     <h1>Math Formula Extractor</h1>
     <textarea id="pasteBox" placeholder="Paste image here..."></textarea>
     <img id="uploadedImage" style="display: none;" />
