@@ -102,3 +102,4 @@ Temporary Items
 *logs
 *test
 *.pyc
+flask_math2latex/monitor_log.txt
