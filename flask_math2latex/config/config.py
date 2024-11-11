@@ -10,10 +10,10 @@ logger.add("./logs/server.log", rotation="10 MB")
 class MysqlConfig:
     MYSQL_HOST = "127.0.0.1"
     MYSQL_USER = "root"
-    MYSQL_PASSWORD = "123456"
+    MYSQL_PASSWORD = "root"
     MYSQL_DB = "nlp_test"
     MYSQL_CHARSET = "utf8mb4"
-    MYSQL_PORT = 3307
+    MYSQL_PORT = 3306
 
 
 # 配置MySQL数据库连接
