@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "mathocr"
+version = "0.1.0"
+description = "convert mathmatical formula in image into latex code"
+authors = ["chongzicbo <361848641@qq.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+torch = "2.3"
+transformers = "^4.46.2"
+loguru = "^0.7.2"
+pillow = "^11.0.0"
+ecs-logging = "^2.2.0"
+pydantic = "2.9"
+python-dotenv = "^1.0.1"
+fastapi = "^0.115.4"
+uvicorn = "^0.32.0"
+python-multipart = "^0.0.17"
+optimum = "^1.23.3"
+onnxruntime = "^1.20.0"
+onnx = "^1.17.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

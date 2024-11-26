@@ -9,7 +9,7 @@ from transformers import VisionEncoderDecoderModel
 from transformers.models.nougat import NougatTokenizerFast
 from nougat_latex.util import process_raw_latex_code
 from nougat_latex import NougatLaTexProcessor
-from config.config import logger
+from loguru import logger
 
 pretrained_model_name_or_path = "Norm/nougat-latex-base"
 device = "cpu"
@@ -49,48 +49,7 @@ checkpoint_path = "/data/bocheng/pretrained_model/mathocr/nougat-base_epoch17_st
 model = load_model(checkpoint_path)
 tokenizer, latex_processor = load_tokenizer_processor()
 
-
-def predict_one(
-    img_path: str,
-) -> str:
-    image = Image.open(img_path)
-    if not image.mode == "RGB":
-        image = image.convert("RGB")
-    pixel_values = latex_processor(image, return_tensors="pt").pixel_values
-    task_prompt = tokenizer.bos_token
-    decoder_input_ids = tokenizer(
-        task_prompt, add_special_tokens=False, return_tensors="pt"
-    ).input_ids
-    with torch.no_grad():
-        outputs = model.generate(
-            pixel_values.to(device),
-            decoder_input_ids=decoder_input_ids.to(device),
-            max_length=model.decoder.config.max_length,
-            early_stopping=True,
-            pad_token_id=tokenizer.pad_token_id,
-            eos_token_id=tokenizer.eos_token_id,
-            use_cache=True,
-            num_beams=1,
-            bad_words_ids=[[tokenizer.unk_token_id]],
-            return_dict_in_generate=True,
-        )
-    print(outputs.sequences)
-    sequence = tokenizer.batch_decode(outputs.sequences)[0]
-    sequence = (
-        sequence.replace(tokenizer.eos_token, "")
-        .replace(tokenizer.pad_token, "")
-        .replace(tokenizer.bos_token, "")
-    )
-    sequence = process_raw_latex_code(sequence)
-    logger.info("nougat predicted sequence:{}".format(sequence))
-    return sequence
-
-
 if __name__ == "__main__":
-    checkpoint_path = "/data/bocheng/data/logs/im2latex_170k/nougat-base_epoch17_step108000_lr8.861961e-07_avg_loss0.00397_token_acc0.84964_edit_dis0.02927.pth"
-    img_path = "/data/bocheng/data/MathOCR/nougat_latex/test/0000051.png"
-    model = load_model(checkpoint_path)
-    tokenizer, latex_processor = load_tokenizer_processor()
-    sequence = predict_one(img_path)
-    # print(sequence)
     # model.save_pretrained("./mymodel", safe_serialization=True)
+    tokenizer.save_pretrained("./mymodel")
+    latex_processor.save_pretrained("./mymodel")
